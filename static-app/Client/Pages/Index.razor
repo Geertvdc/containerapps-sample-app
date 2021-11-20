@@ -1,0 +1,46 @@
+﻿@page "/"
+@using BlazorApp.Shared 
+@inject HttpClient Http
+
+<h1>Container App Event Driven Sample</h1>
+
+See how Azure Container Apps can be used to build containers that scale and run based on events.
+
+<br/><br/>
+
+<h3>Service Bus Sender</h3>
+
+<p>Message:  </p><input @bind="sbMessage" @bind:event="oninput" />
+
+<button class="btn btn-primary" @onclick="SendSbMessage">Send Message</button>
+
+<br/><br/>
+
+<h3>Event Hub Sender</h3>
+
+<p>Message:  </p><input @bind="ehMessage" @bind:event="oninput" />
+
+<button class="btn btn-primary" @onclick="SendEhMessage">Send Message</button>
+
+<br/>
+<hr/>
+<h3>Message stream from containers</h3>
+<div id="messages" style="heigth:400px;overflow-y:auto;">
+</div>
+
+@code {
+    private string sbMessage;
+    private string ehMessage;
+    private async Task SendSbMessage()
+    {
+        var result = await Http.PostAsJsonAsync<ServiceBusRequest>($"/api/ServiceBusSender", new ServiceBusRequest { Message = sbMessage });
+        sbMessage = "";
+    }
+
+    private async Task SendEhMessage()
+    {
+        var result = await Http.PostAsJsonAsync<EventHubRequest>($"/api/EventHubSender", new EventHubRequest { Message = ehMessage });
+        ehMessage = "";
+    }
+}
+
